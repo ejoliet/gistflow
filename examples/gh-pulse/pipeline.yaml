@@ -1,0 +1,34 @@
+# gh-pulse — snapshot GitHub repo health over time.
+# This whole file + transform.py IS the gist. Fork it, edit `repos`, done.
+name: gh-pulse
+version: 1
+schedule: "0 * * * *"          # hourly
+source:
+  type: http
+  # One URL per repo; the engine fans out and passes each response to transform()
+  urls_from_param: repos
+  url_template: "https://api.github.com/repos/{repo}"
+params:
+  repos:
+    - duckdb/duckdb
+    - apache/airflow
+    - pola-rs/polars
+    - astral-sh/uv
+    - anthropics/claude-code
+transform: transform.py
+output:
+  table: gh_pulse
+  format: parquet
+  mode: append                  # snapshot rows accumulate -> time series for free
+  schema:
+    - {name: ts, type: timestamp}
+    - {name: repo, type: string}
+    - {name: stars, type: int64}
+    - {name: forks, type: int64}
+    - {name: open_issues, type: int64}
+    - {name: subscribers, type: int64}
+    - {name: pushed_at, type: timestamp}
+limits:                          # enforced by the runner, not trusted code
+  max_rows: 10000
+  timeout_s: 60
+  egress: [api.github.com]

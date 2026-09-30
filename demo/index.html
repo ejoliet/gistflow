@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gistflow — ejoliet/gh-pulse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/alasql/4.6.6/alasql.min.js"></script>
+<style>
+  :root{
+    --bg:#10161F; --panel:#18202E; --line:#2A3547;
+    --ink:#E9ECF1; --mut:#8A94A6; --amber:#F2B33D; --teal:#43C6AC;
+    --mono:ui-monospace,'SF Mono','Cascadia Mono',Menlo,Consolas,monospace;
+    --serif:Charter,'Iowan Old Style',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.55}
+  .wrap{max-width:880px;margin:0 auto;padding:28px 20px 72px}
+  a{color:var(--amber)}
+
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .mark{font-weight:700;letter-spacing:.04em}
+  .mark::before{content:"▚ ";color:var(--amber)}
+  .path{color:var(--mut)}
+  .path b{color:var(--ink);font-weight:600}
+
+  .lineage{margin-top:10px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;
+    color:var(--mut);font-size:12px;display:flex;gap:18px;flex-wrap:wrap}
+  .lineage span b{color:var(--teal);font-weight:600}
+
+  h1{font-family:var(--serif);font-weight:400;font-size:clamp(30px,5.4vw,44px);
+     letter-spacing:-.01em;margin:44px 0 6px}
+  h1 em{font-style:italic;color:var(--amber)}
+  .sub{color:var(--mut);max-width:56ch;margin-bottom:26px}
+
+  .prompt{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .prompt-bar{display:flex;justify-content:space-between;align-items:center;
+    padding:8px 12px;border-bottom:1px solid var(--line);color:var(--mut);font-size:12px}
+  .prompt-bar .dot{color:var(--teal)}
+  textarea{width:100%;min-height:88px;padding:14px;background:transparent;border:0;resize:vertical;
+    color:var(--ink);font:inherit;caret-color:var(--amber)}
+  textarea:focus{outline:2px solid var(--amber);outline-offset:-2px}
+  .actions{display:flex;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);flex-wrap:wrap}
+  button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);
+    background:transparent;color:var(--ink);padding:6px 12px}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .run{background:var(--amber);border-color:var(--amber);color:#171204;font-weight:700}
+  .chip{color:var(--mut);font-size:12px}
+  .chip:hover{color:var(--ink);border-color:var(--mut)}
+  .meta{margin:10px 2px;color:var(--mut);font-size:12px}
+  .meta b{color:var(--teal)}
+
+  table{width:100%;border-collapse:collapse;margin-top:4px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .bar{height:6px;background:var(--teal);border-radius:3px;min-width:2px;margin-top:4px;opacity:.85}
+  .err{color:#ff8f7a;padding:12px 2px}
+
+  h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:52px 0 4px}
+  .h2sub{color:var(--mut);margin-bottom:16px}
+  .snip{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:14px}
+  .snip-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;
+    border-bottom:1px solid var(--line);color:var(--mut);font-size:12px}
+  pre{padding:12px 14px;overflow-x:auto;font-size:12.5px;line-height:1.6}
+  .cm{color:var(--mut)}
+  .badge-live{display:flex;align-items:center;gap:12px;padding:12px 14px}
+  .badge-live svg{flex:none}
+  .badge-live span{color:var(--mut);font-size:12px}
+
+  footer{margin-top:56px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  @media (prefers-reduced-motion:no-preference){
+    .dot{animation:pulse 2.4s infinite}
+    @keyframes pulse{50%{opacity:.35}}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="mark">gistflow</div>
+  <div class="path">catalog / <b>ejoliet/gh-pulse</b> · hourly · Parquet on S3</div>
+</header>
+
+<div class="lineage">
+  <span><span class="dot">●</span> live</span>
+  <span>runs <b>1292bafb</b>, <b>53a396f0</b></span>
+  <span>spec <b>57c2dc1c32d8</b></span>
+  <span>source: fork of <a href="#">gist 3a91…</a></span>
+</div>
+
+<h1>Fork a gist. <em>Fork a dataset.</em></h1>
+<p class="sub">This dataset is one gist: a 30-line pipeline.yaml and a 20-line transform.
+It snapshots GitHub repo health every hour. Query it right here — no account, no client.</p>
+
+<div class="prompt">
+  <div class="prompt-bar"><span>SQL · table <b style="color:var(--ink)">latest</b></span><span>read-only · 1000 row cap</span></div>
+  <textarea id="sql" spellcheck="false" aria-label="SQL query">SELECT repo, MAX(stars) AS stars, MAX(open_issues) AS issues
+FROM latest GROUP BY repo ORDER BY stars DESC</textarea>
+  <div class="actions">
+    <button class="run" id="run">Run query</button>
+    <button class="chip" data-q="SELECT repo, MAX(stars) AS stars, MAX(open_issues) AS issues FROM latest GROUP BY repo ORDER BY stars DESC">top repos</button>
+    <button class="chip" data-q="SELECT repo, MAX(open_issues)/MAX(stars) AS issues_per_star FROM latest GROUP BY repo ORDER BY issues_per_star DESC">issue load</button>
+    <button class="chip" data-q="SELECT ts, repo, stars FROM latest WHERE repo LIKE '%duckdb%' ORDER BY ts">duckdb over time</button>
+  </div>
+</div>
+<div class="meta" id="meta"></div>
+<div id="out"></div>
+
+<h2>Use it beyond this page</h2>
+<p class="h2sub">The query is the demo. These are the product.</p>
+
+<div class="snip">
+  <div class="snip-bar"><span>any script — SQL over HTTP</span><button data-copy="c1">Copy</button></div>
+  <pre id="c1">curl "https://gistflow.dev/d/ejoliet/gh_pulse/latest.json?sql=SELECT+repo,max(stars)+FROM+latest+GROUP+BY+repo"</pre>
+</div>
+
+<div class="snip">
+  <div class="snip-bar"><span>any notebook — the Parquet URL is the API</span><button data-copy="c2">Copy</button></div>
+  <pre id="c2">import pandas as pd
+df = pd.read_parquet("https://gistflow.dev/d/ejoliet/gh_pulse/latest.parquet")</pre>
+</div>
+
+<div class="snip">
+  <div class="snip-bar"><span>any README — live badge from your last query</span><button data-copy="c3">Copy</button></div>
+  <pre id="c3">![stars](https://gistflow.dev/badge/ejoliet/gh_pulse?label=duckdb+stars&sql=SELECT+max(stars)+FROM+latest+WHERE+repo='duckdb/duckdb')</pre>
+  <div class="badge-live"><span id="badge"></span><span>← renders live; updates when you run a query above</span></div>
+</div>
+
+<div class="snip">
+  <div class="snip-bar"><span>any CI — data as a deploy gate</span><button data-copy="c4">Copy</button></div>
+  <pre id="c4">- run: gistflow assert ejoliet/gh_pulse "SELECT max(stars) > 1000 FROM latest"
+  <span class="cm"># non-zero exit blocks the deploy</span></pre>
+</div>
+
+<footer>
+  Offline demo: a real snapshot from two pipeline runs is embedded below, queried with AlaSQL.
+  The hosted catalog uses DuckDB-WASM reading the Parquet file over HTTP range requests — same SQL, full dataset.
+</footer>
+</div>
+
+<script>
+// Real rows written by two live runs of examples/gh-pulse against api.github.com.
+const ROWS = [
+ {"ts":"2026-08-12T16:51:31Z","repo":"anthropics/claude-code","stars":141198,"forks":22683,"open_issues":15890,"subscribers":866},
+ {"ts":"2026-08-12T16:51:31Z","repo":"duckdb/duckdb","stars":40189,"forks":3557,"open_issues":841,"subscribers":269},
+ {"ts":"2026-08-12T16:51:31Z","repo":"pola-rs/polars","stars":39341,"forks":3009,"open_issues":2836,"subscribers":217},
+ {"ts":"2026-08-12T16:51:34Z","repo":"anthropics/claude-code","stars":141198,"forks":22683,"open_issues":15890,"subscribers":866},
+ {"ts":"2026-08-12T16:51:34Z","repo":"pola-rs/polars","stars":39341,"forks":3009,"open_issues":2836,"subscribers":217}
+];
+
+const $ = (id)=>document.getElementById(id);
+const esc = (s)=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function badgeSvg(label, value){
+  label=String(label); value=String(value);
+  const lw=6.4*label.length+14, vw=6.4*value.length+14;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${lw+vw}" height="20" role="img" aria-label="${esc(label)}: ${esc(value)}">
+    <rect width="${lw}" height="20" rx="3" fill="#2A3547"/>
+    <rect x="${lw}" width="${vw}" height="20" rx="3" fill="#F2B33D"/>
+    <g font-family="Verdana,sans-serif" font-size="10" text-anchor="middle">
+    <text x="${lw/2}" y="14" fill="#E9ECF1">${esc(label)}</text>
+    <text x="${lw+vw/2}" y="14" fill="#171204" font-weight="bold">${esc(value)}</text></g></svg>`;
+}
+
+function render(rows, ms){
+  const out=$("out"), meta=$("meta");
+  if(!rows.length){ out.innerHTML='<p class="err">0 rows</p>'; meta.textContent=""; return; }
+  const cols=Object.keys(rows[0]);
+  const numeric=cols.filter(c=>typeof rows[0][c]==="number");
+  const barCol=numeric[0];
+  const max=barCol?Math.max(...rows.map(r=>r[barCol]||0)):0;
+  let h="<table><thead><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr></thead><tbody>";
+  for(const r of rows.slice(0,200)){
+    h+="<tr>"+cols.map(c=>{
+      const v=r[c];
+      if(typeof v==="number"){
+        const bar=(c===barCol&&max)?`<div class="bar" style="width:${Math.max(2,100*v/max)}%"></div>`:"";
+        return `<td class="num">${Number.isInteger(v)?v.toLocaleString():v.toFixed(4)}${bar}</td>`;
+      }
+      return `<td>${esc(v??"")}</td>`;
+    }).join("")+"</tr>";
+  }
+  out.innerHTML=h+"</tbody></table>";
+  meta.innerHTML=`<b>${rows.length}</b> rows · <b>${ms.toFixed(1)} ms</b> · in your browser`;
+  // live badge preview: first value of first row
+  const first=rows[0][cols.find(c=>typeof rows[0][c]==="number")??cols[0]];
+  $("badge").innerHTML=badgeSvg("gh-pulse", typeof first==="number"?first.toLocaleString():first);
+}
+
+function run(){
+  const sql=$("sql").value;
+  if(!/^\s*select\b/i.test(sql)||sql.includes(";")){
+    $("out").innerHTML='<p class="err">single SELECT statements only (same rule as the hosted endpoint)</p>';
+    $("meta").textContent=""; return;
+  }
+  try{
+    const t0=performance.now();
+    const rows=window.alasql ? alasql(sql,[ROWS]).map(r=>r) : null;
+    if(rows===null) throw new Error("SQL engine failed to load from CDN — offline?");
+    render(rows, performance.now()-t0);
+  }catch(e){ $("out").innerHTML=`<p class="err">${esc(e.message)}</p>`; $("meta").textContent=""; }
+}
+
+// AlaSQL: "FROM latest" -> positional table [ROWS]
+if(window.alasql){ alasql.options.errorlog=false; }
+document.addEventListener("DOMContentLoaded",()=>{
+  // map table name `latest` to the embedded rows
+  if(window.alasql){ alasql("CREATE TABLE IF NOT EXISTS latest"); alasql.tables.latest.data=ROWS; }
+  $("run").addEventListener("click",run);
+  $("sql").addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") run(); });
+  document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{ $("sql").value=b.dataset.q; run(); }));
+  document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{
+    await navigator.clipboard.writeText($(b.dataset.copy).innerText);
+    b.textContent="Copied"; setTimeout(()=>b.textContent="Copy",1200);
+  }));
+  run();
+});
+</script>
+</body>
+</html>
